@@ -518,8 +518,10 @@ class User(object):
         if self.groups is None:
             return None
         info = self.user_info()
-        groups = set(filter(None, self.groups.split(',')))
-        for g in set(groups):
+        groups = set()
+        for g in filter(None, self.groups.strip('[]').split(',')):
+            groups.add( g.strip().strip( '"\'') )
+        for g in groups:
             if not self.group_exists(g):
                 self.module.fail_json(msg="Group %s does not exist" % (g))
             if info and remove_existing and self.group_info(g)[2] == info[3]:
